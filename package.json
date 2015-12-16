@@ -1,0 +1,29 @@
+{
+  "name": "node-earthlive",
+  "version": "0.1.0",
+  "description": "Earthlive wallpaper for Node.js",
+  "main": "index.js",
+  "dependencies": {
+    "lwip": "^0.0.8",
+    "moment": "^2.10.6",
+    "superagent": "^1.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djyde/node-earthlive.git"
+  },
+  "keywords": [
+    "earthlive",
+    "wallpaper"
+  ],
+  "author": "Randy Lu <randypriv@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/djyde/node-earthlive/issues"
+  },
+  "homepage": "https://github.com/djyde/node-earthlive#readme"
+}
