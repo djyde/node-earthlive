@@ -7,6 +7,7 @@
     "earthlive": "index.js"
   },
   "dependencies": {
+    "fs-extra": "^0.26.2",
     "images": "^2.1.10",
     "moment": "^2.10.6",
     "superagent": "^1.6.1",

@@ -6,7 +6,7 @@ const path = require('path')
 const moment = require('moment')
 const request = require('superagent')
 const wpp = require('wallpaper')
-const fs = require('fs')
+const fs = require('fs-extra')
 const images = require('images')
 
 const SPLIT = 2
@@ -18,10 +18,6 @@ const END_POINT = `http://himawari8-dl.nict.go.jp/himawari8/img/D531106/${SPLIT}
 const LATEST = 'http://himawari8.nict.go.jp/img/D531106/latest.json'
 
 let currentDate = ''
-
-fs.stat('./wallpaper', (err) => {
-  if (err) {fs.mkdir('./wallpaper')};
-})
 
 function fetchLatestDate(){
   return new Promise((resolve, reject) => {
@@ -52,11 +48,12 @@ function downloadPiece(){
               .get(`${END_POINT}/${date}_${x}_${y}.png`)
               .end((err, res) => {
                 count++
+                fs.ensureDirSync('./wallpaper')
                 fs.writeFile(`./wallpaper/${x}_${y}.png`, res.body, (err) => {
                   if (err) {
                     reject(err)
                   } else {
-                    if (count === 4) resolve();
+                    if (count === SPLIT * SPLIT) resolve();
                   }
                 })
               })
@@ -84,13 +81,13 @@ function generate(){
 }
 
 function setWallpaper(){
-  wpp.set(path.resolve('./', 'wallpaper', `${currentDate}.png`)).then(()=> console.log('set wallpaper success at', currentDate))
+  wpp.set(path.resolve('./', 'wallpaper', `${currentDate}.png`)).then(()=> console.log('set wallpaper successful at', currentDate))
 }
 
 function run(){
-  if (currentDate) {fs.unlinkSync(`./wallpaper/${currentDate}.png`)};
+  fs.removeSync('./wallpaper')
   downloadPiece().then(()=> generate().then(()=> setWallpaper()))
 }
 
-setInterval(run(), 5 * 60 * 1000)
+setInterval(run(), 1 * 60 * 1000)
 // generate()
