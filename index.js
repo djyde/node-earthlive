@@ -8,6 +8,7 @@ const request = require('superagent')
 const wpp = require('wallpaper')
 const fs = require('fs-extra')
 const images = require('images')
+const CronJob = require('cron').CronJob
 
 const SPLIT = 2
 
@@ -89,5 +90,14 @@ function run(){
   downloadPiece().then(()=> generate().then(()=> setWallpaper()))
 }
 
-setInterval(run(), 1 * 60 * 1000)
+run()
+
+let task = new CronJob({
+  cronTime: '0 */1 * * * *',
+  onTick(){ run() },
+  start: true
+})
+
+task.start()
+
 // generate()
