@@ -31,5 +31,8 @@
   "bugs": {
     "url": "https://github.com/djyde/node-earthlive/issues"
   },
-  "homepage": "https://github.com/djyde/node-earthlive#readme"
+  "homepage": "https://github.com/djyde/node-earthlive#readme",
+  "engines": {
+    "node": ">= 4.0.0"
+  }
 }
