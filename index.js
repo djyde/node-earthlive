@@ -1,8 +1,10 @@
 'use strict'
 
+const path = require('path')
 const moment = require('moment')
 const lwip = require('lwip')
 const request = require('superagent')
+const wpp = require('wallpaper')
 
 const SPLIT = 1
 
@@ -66,7 +68,10 @@ function run(){
         .then((pieceBuffer) => getImage(pieceBuffer))
         .then((pieceImage) => {
           canvas.paste(445, 175, pieceImage, (err, wallpaper) => {
-            wallpaper.writeFile('./wallpaper.png', (err) => err ? console.log(err) : 'Generated!')
+            wallpaper.writeFile('./wallpaper.png', (err) => {
+              console.log(path.resolve('./', 'wallpaper.png'))
+              wpp.set(path.resolve('./', 'wallpaper.png'), () => console.log('new wallpaper set!'))
+            })
           })
         })
         .catch((err) => console.log(err))

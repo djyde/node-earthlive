@@ -6,7 +6,8 @@
   "dependencies": {
     "lwip": "^0.0.8",
     "moment": "^2.10.6",
-    "superagent": "^1.6.1"
+    "superagent": "^1.6.1",
+    "wallpaper": "^2.1.0"
   },
   "devDependencies": {},
   "scripts": {
