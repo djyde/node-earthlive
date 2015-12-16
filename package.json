@@ -1,7 +1,7 @@
 {
   "name": "node-earthlive",
   "version": "0.1.0",
-  "description": "Earthlive wallpaper for Node.js",
+  "description": "Earthlive wallpaper every 5 minutes",
   "main": "index.js",
   "bin": {
     "earthlive": "index.js"
