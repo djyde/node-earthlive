@@ -4,7 +4,7 @@
   "description": "Earthlive wallpaper for Node.js",
   "main": "index.js",
   "dependencies": {
-    "lwip": "^0.0.8",
+    "images": "^2.1.10",
     "moment": "^2.10.6",
     "superagent": "^1.6.1",
     "wallpaper": "^2.1.0"

@@ -2,19 +2,24 @@
 
 const path = require('path')
 const moment = require('moment')
-const lwip = require('lwip')
 const request = require('superagent')
 const wpp = require('wallpaper')
+const fs = require('fs')
+const images = require('images')
 
-const SPLIT = 1
+const SPLIT = 2
 
-const WALLPAPER_WIDTH = 1440
-const WALLPAPER_HEIGHT = 900
+const WALLPAPER_WIDTH = 1440 * 2
+const WALLPAPER_HEIGHT = 900 * 2
 
 const END_POINT = `http://himawari8-dl.nict.go.jp/himawari8/img/D531106/${SPLIT}d/550`
 const LATEST = 'http://himawari8.nict.go.jp/img/D531106/latest.json'
 
+let currentDate = ''
 
+fs.stat('./wallpaper', (err) => {
+  if (err) {fs.mkdir('./wallpaper')};
+})
 
 function fetchLatestDate(){
   return new Promise((resolve, reject) => {
@@ -24,59 +29,68 @@ function fetchLatestDate(){
         if (err) {
           reject(err)
         } else {
+          currentDate = moment(res.body.date).format('YYYYMMDDHHmmss')
           resolve(moment(res.body.date).format('YYYY/MM/DD/HHmmss'))
         }
       })
   })
 }
 
-function downloadPiece(x, y){
+function downloadPiece(){
   return new Promise((resolve, reject) => {
+
     fetchLatestDate()
       .then((date) => {
-        request
-          .get(`${END_POINT}/${date}_${x}_${y}.png`)
-          .end((err, res) => {
-            err ? reject(err) : resolve(res.body)
-          })
+
+        let count = 0
+
+        for(let x = 0; x < SPLIT; x++){
+          for(let y = 0; y < SPLIT; y++){
+            request
+              .get(`${END_POINT}/${date}_${x}_${y}.png`)
+              .end((err, res) => {
+                count++
+                fs.writeFile(`./wallpaper/${x}_${y}.png`, res.body, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    if (count === 4) resolve();
+                  }
+                })
+              })
+          }
+        }
       })
   })
 }
 
-// get lwip image object from buffer
-function getImage(buffer){
-  return new Promise((resolve, reject) => {
-    lwip.open(buffer, 'png', (err, image) => {
-      err ? reject(err) : resolve(image)
-    })
+function generate(){
+  // TODO should be flexible
+  console.log('generating..')
+  return new Promise((resolve) => {
+    console.log(`./wallpaper/${Date.now()}.png`)
+
+    images(WALLPAPER_WIDTH, WALLPAPER_HEIGHT)
+      .fill(0x00, 0x00, 0x00)
+      .draw(images('./wallpaper/0_0.png'), 890, 350)
+      .draw(images('./wallpaper/0_1.png'), 890, 900)
+      .draw(images('./wallpaper/1_0.png'), 1440, 350)
+      .draw(images('./wallpaper/1_1.png'), 1440, 900)
+      .save(`./wallpaper/${currentDate}.png`, {quality: 100})
+
+      // TODO should be a callback, but the `images` library did not provide.
+      setTimeout(()=> resolve(), 5000)
   })
+}
+
+function setWallpaper(){
+  wpp.set(path.resolve('./', 'wallpaper', `${currentDate}.png`)).then(()=> console.log('set wallpaper success at', currentDate))
 }
 
 function run(){
-
-    // create a wallpaper canvas
-    new Promise((resolve, reject) => {
-      lwip.create(WALLPAPER_WIDTH, WALLPAPER_HEIGHT, 'black', (err, canvas) => {
-          err ? reject(err) : resolve(canvas)
-      })
-    })
-
-    .then((canvas) => {
-      // download all splited piece as buffer
-
-      downloadPiece(0, 0)
-        .then((pieceBuffer) => getImage(pieceBuffer))
-        .then((pieceImage) => {
-          canvas.paste(445, 175, pieceImage, (err, wallpaper) => {
-            wallpaper.writeFile('./wallpaper.png', (err) => {
-              console.log(path.resolve('./', 'wallpaper.png'))
-              wpp.set(path.resolve('./', 'wallpaper.png'), () => console.log('new wallpaper set!'))
-            })
-          })
-        })
-        .catch((err) => console.log(err))
-    })
-    .catch((err) => console.log(err))
+  fs.unlinkSync(`./wallpaper/${currentDate}.png`)
+  downloadPiece().then(()=> generate().then(()=> setWallpaper()))
 }
 
-run()
+setInterval(run(), 5 * 60 * 1000)
+// generate()
