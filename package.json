@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Earthlive wallpaper for Node.js",
   "main": "index.js",
+  "bin": {
+    "earthlive": "index.js"
+  },
   "dependencies": {
     "images": "^2.1.10",
     "moment": "^2.10.6",

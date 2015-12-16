@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict'
 
 const path = require('path')
@@ -68,8 +70,6 @@ function generate(){
   // TODO should be flexible
   console.log('generating..')
   return new Promise((resolve) => {
-    console.log(`./wallpaper/${Date.now()}.png`)
-
     images(WALLPAPER_WIDTH, WALLPAPER_HEIGHT)
       .fill(0x00, 0x00, 0x00)
       .draw(images('./wallpaper/0_0.png'), 890, 350)
@@ -88,7 +88,7 @@ function setWallpaper(){
 }
 
 function run(){
-  fs.unlinkSync(`./wallpaper/${currentDate}.png`)
+  if (currentDate) {fs.unlinkSync(`./wallpaper/${currentDate}.png`)};
   downloadPiece().then(()=> generate().then(()=> setWallpaper()))
 }
 
